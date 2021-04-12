@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt, faTrashAlt  } from "@fortawesome/free-solid-svg-icons";
 
-const Sidebar = ({isOpen = false, value = false, onClose, deleteTask, selectedChange}) => {
+const Sidebar = ({isOpen = false, value = false, onClose, deleteTask, selectedChange, editTask}) => {
   const [selectStatus, setSelectStatus] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Sidebar = ({isOpen = false, value = false, onClose, deleteTask, selectedCh
       <div className="sidebar-description__label">Description</div>
       <div className="sidebar-text">{value.description}</div>
       <div className="sidebar-buttons">
-        <Button className="sidebar-button__edit" onClick={false} disabled>
+        <Button className="sidebar-button__edit" onClick={() => editTask(value)}>
           <FontAwesomeIcon className="sidebar-button__icon" icon={faPencilAlt} /> Edit
         </Button>
         <Button className="sidebar-button__delete" onClick={() => deleteTask(value.id)}>

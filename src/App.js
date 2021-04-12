@@ -1,10 +1,7 @@
 import React from 'react';
 import { Router, Route, Switch } from "react-router-dom"
-import { useSelector, useDispatch } from "react-redux";
 import { createBrowserHistory } from "history"
 import MainPageScreen from './modules/MainPageScreen';
-import TodoListScreen from './modules/TodoListScreen';
-import TodoDetailsScreen from './modules/TodoDetailsScreen';
 
 const App = () => {
   const history = createBrowserHistory()

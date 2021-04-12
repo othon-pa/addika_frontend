@@ -23,12 +23,12 @@ const TodoListScreen = withRouter(({ history }) => {
   const [inputDescription, setInputDescription] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState(false);
+  const [editingTask, setEditingTask] = useState(false);
   const items = [];
 
   const getTodos = useCallback(() => {
     setSearching(true);
     Request.get('/todos', null, { json: true }).then((data) => {
-      console.log(data)
       setSearching(false);
       setTodos(data.data);
 
@@ -45,17 +45,23 @@ const TodoListScreen = withRouter(({ history }) => {
 
     Request.post('/todos', details).then((data) => {
       getTodos();
+      cleanInputs();
     }).catch((error) => {
       console.log(error)
+      cleanInputs();
     })
-    console.log(details);
+    
   }
 
   const openDetails = (value, date) => {
     value.created = date;
-    console.log(isOpen)
     setValue(value);
     setIsOpen(true);
+  }
+
+  const cleanInputs = () => {
+    setInputDescription('');
+    setInputTitle('');
   }
 
   const deleteTask = (taskId) => {
@@ -64,6 +70,29 @@ const TodoListScreen = withRouter(({ history }) => {
     }).catch((error) => {
       console.log(error)
     })
+  }
+
+  const editTask = (task) => {
+    setEditingTask(task.id)
+    setInputDescription(task.description);
+    setInputTitle(task.title);
+    handleShow(task);
+  }
+
+  const saveEditedTask = () => {
+    const details = {
+        'title' : inputTitle,
+        'description' : inputDescription
+    }
+
+    Request.put('/todos/' + editingTask, details).then((data) => {
+      getTodos();
+      cleanInputs();
+      handleClose();
+    }).catch((error) => {
+      console.log(error)
+    })
+    
   }
 
   const selectedChange = (taskId, completed) => {
@@ -101,9 +130,13 @@ const TodoListScreen = withRouter(({ history }) => {
     }
   }
 
-
   const handleClose = () => setCreatingTask(false);
-  const handleShow = () => setCreatingTask(true);
+  const handleShow = (task = false) => {
+    if (task === false){
+      setEditingTask(false);
+    }
+    setCreatingTask(true);
+  }
 
   const CustomInput = React.forwardRef((props, ref) => {
     return (
@@ -126,10 +159,12 @@ const TodoListScreen = withRouter(({ history }) => {
         onClose={closeDetails} 
         deleteTask={deleteTask}
         selectedChange={selectedChange}
+        editTask={editTask}
       />
       <div className="todo-list__container" id="page-wrap">
         <div className="todo-list__header">
           <p className="list-header__subtitle">Tasks</p>
+          <div class="break"></div>
           <div className="list-header__datepicker">
             <DatePicker 
               value= {"Created: " + selectedDate.getDate() + "/" + (monthNames[selectedDate.getMonth()]) + "/" + selectedDate.getFullYear()}
@@ -138,8 +173,9 @@ const TodoListScreen = withRouter(({ history }) => {
               customInput={<CustomInput />}
             />
           </div>
+          <div class="break"></div>
           <div className="horizontal-division"></div>
-          <Button className="list-header__add" onClick={handleShow}>
+          <Button className="list-header__add" onClick={() => handleShow(false)}>
             <FontAwesomeIcon icon={faPlusCircle} /> Add Task
           </Button>
         </div>
@@ -169,18 +205,18 @@ const TodoListScreen = withRouter(({ history }) => {
             <div className="modal-form__label">
               Title (Required)
             </div>
-            <input className="modal-input__title addika-input" type="text" name="title" onChange={e => setInputTitle(e.target.value)}/>
+            <input className="modal-input__title addika-input" type="text" name="title" value={editingTask ? inputTitle : ""} onChange={e => setInputTitle(e.target.value)}/>
             <div className="modal-form__label">
               Description
             </div>
-            <textarea rows="4" className="modal-textarea__description addika-input" type="text" name="description" onChange={e => setInputDescription(e.target.value)}/>
+            <textarea rows="4" className="modal-textarea__description addika-input" type="text" name="description" value={editingTask ? inputDescription : ""} onChange={e => setInputDescription(e.target.value)}/>
           </form>
           </Modal.Body>
           <Modal.Footer>
             <Button className="modal-button__close" onClick={handleClose}>
               Cancel
             </Button>
-            <Button className="modal-button__save" onClick={saveTask}>
+            <Button className="modal-button__save" onClick={editingTask ? saveEditedTask : saveTask}>
               Save
             </Button>
           </Modal.Footer>

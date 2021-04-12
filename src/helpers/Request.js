@@ -62,9 +62,24 @@ class Request {
   }
 
   patch(url, params = null, options = {}) {
-    console.log("params", params)
     var data = {
       method: 'PATCH',
+      uri: this.base_url + url,
+      headers: this.headers
+    }
+    if (options.json) {
+      if (params) data.body = params
+      data.json = true
+      data.headers['Content-Type'] = 'application/json'
+    } else {
+      if (params) data.form = params
+    }
+    return this.doRequest(data)
+  }
+
+  put(url, params = null, options = {}) {
+    var data = {
+      method: 'PUT',
       uri: this.base_url + url,
       headers: this.headers
     }

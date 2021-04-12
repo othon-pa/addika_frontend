@@ -8,7 +8,6 @@ import '../css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const MainPageScreen = withRouter(({ history }) => {
-  const counter = useSelector(state => state.counter);
   const [creatingTask, setCreatingTask] = useState(false);
   const dispatch = useDispatch();
 
@@ -20,10 +19,6 @@ const MainPageScreen = withRouter(({ history }) => {
       <header className="App-header" >
         <h2 className="todo-list__title">My Tasks</h2>
         <TodoListScreen/>
-
-        {/* <h1>Counter: {counter}</h1>
-        <button onClick={(() => dispatch({type: "INCREMENT"}))}>INCREMENT</button>
-        <button onClick={(() => dispatch({type: "DECREMENT"}))}>DECREMENT</button> */}
       </header>
     </div>
   );
